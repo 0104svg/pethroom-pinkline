@@ -41,8 +41,10 @@ body{margin:0;overflow:hidden;font-family:var(--font);color:var(--deep);backgrou
 .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--paper);overflow:hidden}
 .face img{width:100%;height:100%;object-fit:cover;display:block}
 .face.b{transform:rotateY(180deg)}
-.face::after{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(120,20,60,.18),transparent 30%);opacity:0;transition:opacity .75s}
-.leaf.go .face::after{opacity:1}
+.face::after{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(120,20,60,.16),transparent 30%);opacity:0}
+.leaf.go .face::after{animation:shade .75s ease-in-out}
+@keyframes shade{50%{opacity:1}100%{opacity:0}}
+.leaf{will-change:transform}
 .nav{position:absolute;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;border:0;background:var(--white);color:var(--hot);font:900 26px/1 var(--font);cursor:pointer;box-shadow:0 8px 24px rgba(214,58,119,.18);display:grid;place-items:center;z-index:9}
 .nav:hover{background:var(--hot);color:var(--white)}
 .nav:disabled{opacity:.3;cursor:default}
@@ -87,34 +89,49 @@ body{margin:0;overflow:hidden;font-family:var(--font);color:var(--deep);backgrou
  const spreads=[[null,1]];for(let p=2;p<N;p+=2)spreads.push([p,p+1]);spreads.push([N,null]);
  const app=document.getElementById('app'),L=document.getElementById('L'),R=document.getElementById('R'),book=document.getElementById('book');
  const prev=document.getElementById('prev'),next=document.getElementById('next'),count=document.getElementById('count'),thumbs=document.getElementById('thumbs');
- let single=false,s=0,p=1,busy=false;
- for(let n=1;n<=N;n++){const im=new Image();im.src=src(n);}
- function setHalf(el,n,alt){const im=el.querySelector('img');if(n){im.src=src(n);im.alt=`${n}페이지`;el.classList.remove('empty');im.hidden=false;}else{el.classList.add('empty');im.hidden=true;}}
+ let single=false,s=0,p=1,busy=false,thumbMode=null;
+ const cache={};
+ function ready(n){if(!n)return Promise.resolve();if(!cache[n]){const im=new Image();im.src=src(n);cache[n]=im.decode().catch(()=>{});}return cache[n];}
+ for(let n=1;n<=N;n++)ready(n);
+ function setHalf(el,n){const im=el.querySelector('img');if(n){if(im.getAttribute('src')!==src(n))im.src=src(n);im.alt=`${n}페이지`;el.classList.remove('empty');im.hidden=false;}else{el.classList.add('empty');im.hidden=true;}}
  function render(){
   if(single){setHalf(R,p);count.textContent=`${p} / ${N}`;prev.disabled=p===1;next.disabled=p===N;}
   else{const [a,b]=spreads[s];setHalf(L,a);setHalf(R,b);count.textContent=a&&b?`${a}–${b} / ${N}`:`${a||b} / ${N}`;prev.disabled=s===0;next.disabled=s===spreads.length-1;}
-  buildThumbs();
+  syncThumbs();
  }
- function buildThumbs(){thumbs.textContent='';
-  const groups=single?Array.from({length:N},(_,i)=>[i+1]):spreads.map(x=>x.filter(Boolean));
-  groups.forEach((g,i)=>{const b=document.createElement('button');b.type='button';b.className='th';b.setAttribute('aria-label',g.join('–')+'페이지');
-   g.forEach(n=>{const im=document.createElement('img');im.src=src(n);im.alt='';b.appendChild(im);});
-   const cur=single?(i+1===p):(i===s);b.setAttribute('aria-current',cur?'true':'false');b.onclick=()=>jump(i);thumbs.appendChild(b);if(cur)requestAnimationFrame(()=>b.scrollIntoView({block:'nearest',inline:'center'}));});}
- function jump(i){if(busy)return;if(single){p=i+1;}else{if(i===s)return;s=i;}render();}
- function flip(dir){
+ function syncThumbs(){
+  if(thumbMode!==single){thumbMode=single;thumbs.textContent='';
+   const groups=single?Array.from({length:N},(_,i)=>[i+1]):spreads.map(x=>x.filter(Boolean));
+   groups.forEach((g,i)=>{const b=document.createElement('button');b.type='button';b.className='th';b.setAttribute('aria-label',g.join('–')+'페이지');
+    g.forEach(n=>{const im=document.createElement('img');im.src=src(n);im.alt='';b.appendChild(im);});b.onclick=()=>jump(i);thumbs.appendChild(b);});}
+  const cur=single?p-1:s;[...thumbs.children].forEach((b,i)=>{const on=i===cur;b.setAttribute('aria-current',on?'true':'false');if(on)requestAnimationFrame(()=>b.scrollIntoView({block:'nearest',inline:'center'}));});
+ }
+ async function jump(i){if(busy)return;busy=true;if(single){p=i+1;await ready(p);}else{if(i===s){busy=false;return;}s=i;await Promise.all(spreads[s].map(ready));}render();busy=false;}
+ const raf=()=>new Promise(r=>requestAnimationFrame(r));
+ async function flip(dir){
   if(busy)return;
-  if(single){const np=p+dir;if(np<1||np>N)return;p=np;render();return;}
+  if(single){const np=p+dir;if(np<1||np>N)return;busy=true;await ready(np);p=np;render();busy=false;return;}
   const ns=s+dir;if(ns<0||ns>=spreads.length)return;
-  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;if(reduce){s=ns;render();return;}
   busy=true;const [ca,cb]=spreads[s],[na,nb]=spreads[ns];
+  await Promise.all([ca,cb,na,nb].map(ready));
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){s=ns;render();busy=false;return;}
   const leaf=document.createElement('div');leaf.className='leaf '+(dir>0?'fwd':'back');
   const fa=document.createElement('div');fa.className='face f';const fb=document.createElement('div');fb.className='face b';
   const ia=new Image(),ib=new Image();ia.alt='';ib.alt='';
-  if(dir>0){ia.src=src(cb);ib.src=src(na);setHalf(R,nb);}else{ia.src=src(ca);ib.src=src(nb);setHalf(L,na);}
-  fa.appendChild(ia);fb.appendChild(ib);leaf.append(fa,fb);book.appendChild(leaf);
-  if(dir>0&&!nb){R.classList.add('empty');}
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{leaf.classList.add('go');leaf.style.transform=`rotateY(${dir>0?-180:180}deg)`;}));
-  leaf.addEventListener('transitionend',e=>{if(e.target!==leaf)return;s=ns;render();leaf.remove();busy=false;},{once:false});
+  ia.src=src(dir>0?cb:ca);ib.src=src(dir>0?na:nb);
+  fa.appendChild(ia);fb.appendChild(ib);leaf.append(fa,fb);
+  await Promise.all([ia.decode().catch(()=>{}),ib.decode().catch(()=>{})]);
+  book.appendChild(leaf);
+  // reveal the page underneath only once the leaf covers it
+  await raf();
+  if(dir>0)setHalf(R,nb);else setHalf(L,na);
+  const under=(dir>0?R:L).querySelector('img');if(!under.hidden)await under.decode().catch(()=>{});
+  await raf();
+  leaf.classList.add('go');leaf.style.transform=`rotateY(${dir>0?-180:180}deg)`;
+  await new Promise(r=>{const f=e=>{if(e.target===leaf&&e.propertyName==='transform'){leaf.removeEventListener('transitionend',f);r();}};leaf.addEventListener('transitionend',f);setTimeout(r,1200);});
+  s=ns;render();
+  const other=(dir>0?L:R).querySelector('img');if(!other.hidden)await other.decode().catch(()=>{});
+  await raf();leaf.remove();busy=false;
  }
  prev.onclick=()=>flip(-1);next.onclick=()=>flip(1);
  addEventListener('keydown',e=>{if(e.key==='ArrowRight')flip(1);if(e.key==='ArrowLeft')flip(-1);});
