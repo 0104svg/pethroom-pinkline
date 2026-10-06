@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PETHROOM Pink Line</title>
+<meta name="description" content="PETHROOM Pink Line Brand & Product Introduction 2026">
+<meta property="og:title" content="PETHROOM Pink Line">
+<meta property="og:description" content="Brand & Product Introduction 2026">
+<meta property="og:image" content="p-1.jpg">
+<style>html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800;900&display=swap">
+<style>
+/* Layout: an open book on a soft pink desk — spreads on wide screens, single pages on phones; one committed pink look */
+:root{--bg:#F7DCE7;--desk:#F2CDDC;--hot:#EC4C8A;--deep:#D63A77;--soft:#EE86AE;--white:#FFFFFF;--paper:#FFF8FB;
+ --font:'Montserrat','Apple SD Gothic Neo','Noto Sans KR',system-ui,sans-serif;color-scheme:light}
+html,body{height:100%}
+body{margin:0;overflow:hidden;font-family:var(--font);color:var(--deep);background:radial-gradient(120% 90% at 50% 45%,var(--paper) 0%,var(--bg) 55%,var(--desk) 100%)}
+.app{height:100%;display:flex;flex-direction:column}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 22px}
+.brand{margin:0;display:flex;align-items:center;color:var(--hot)}
+.logo{height:17px;width:auto;display:block}
+.brand span{margin-left:10px;font-weight:800;font-size:12px;color:var(--soft)}
+.count{margin:0;font-weight:800;font-size:13px;font-variant-numeric:tabular-nums;background:var(--white);padding:6px 12px;border-radius:999px}
+.stage{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding-inline:16px;touch-action:pan-y;user-select:none}
+.book{position:relative;height:min(100%,calc((100vw - 220px) * 1754 / 2480));aspect-ratio:2480/1754;max-width:100%;perspective:2600px}
+.half{position:absolute;top:0;width:50%;height:100%;background:var(--paper)}
+.half img{width:100%;height:100%;display:block;object-fit:cover;-webkit-user-drag:none}
+.L{left:0;box-shadow:-14px 22px 40px rgba(214,58,119,.20)}
+.R{right:0;box-shadow:14px 22px 40px rgba(214,58,119,.20)}
+.half.empty{background:transparent;box-shadow:none}
+.L::after,.R::after{content:"";position:absolute;inset:0;pointer-events:none}
+.L::after{background:linear-gradient(to left,rgba(120,20,60,.18),rgba(120,20,60,0) 9%)}
+.R::after{background:linear-gradient(to right,rgba(120,20,60,.20),rgba(255,255,255,.06) 3%,rgba(120,20,60,0) 10%)}
+.half.empty::after{display:none}
+.leaf{position:absolute;top:0;width:50%;height:100%;transform-style:preserve-3d;z-index:5;transition:transform .75s cubic-bezier(.45,.05,.25,1)}
+.leaf.fwd{left:50%;transform-origin:left center}
+.leaf.back{left:0;transform-origin:right center}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--paper);overflow:hidden}
+.face img{width:100%;height:100%;object-fit:cover;display:block}
+.face.b{transform:rotateY(180deg)}
+.face::after{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(120,20,60,.18),transparent 30%);opacity:0;transition:opacity .75s}
+.leaf.go .face::after{opacity:1}
+.nav{position:absolute;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;border:0;background:var(--white);color:var(--hot);font:900 26px/1 var(--font);cursor:pointer;box-shadow:0 8px 24px rgba(214,58,119,.18);display:grid;place-items:center;z-index:9}
+.nav:hover{background:var(--hot);color:var(--white)}
+.nav:disabled{opacity:.3;cursor:default}
+.nav:focus-visible,.th:focus-visible{outline:3px solid var(--hot);outline-offset:3px}
+.prev{left:22px}.next{right:22px}
+.thumbs{display:flex;gap:10px;overflow-x:auto;justify-content:safe center;padding:10px 20px calc(14px + env(safe-area-inset-bottom,0px))}
+.th{flex:0 0 auto;display:flex;gap:1px;padding:3px;border:2px solid transparent;border-radius:6px;background:transparent;cursor:pointer;opacity:.55;transition:opacity .2s,border-color .2s}
+.th img{width:30px;aspect-ratio:1240/1754;display:block;object-fit:cover}
+.th[aria-current="true"]{opacity:1;border-color:var(--hot)}
+.hint{margin:0;text-align:center;font-size:11px;font-weight:600;color:var(--soft)}
+/* phone: single page */
+.single .book{aspect-ratio:1240/1754;height:min(100%,calc((100vw - 32px) * 1754 / 1240))}
+.single .half{width:100%}
+.single .L{display:none}.single .R{right:0;box-shadow:0 18px 40px rgba(214,58,119,.22)}
+.single .R::after{display:none}
+.single .nav{display:none}
+.single .th img{width:24px}
+.single .hint{display:none}
+.count{white-space:nowrap}
+@media (max-width:760px){.brand span{display:none}.bar{padding:12px 16px}}
+.book{perspective:3600px}
+@media (prefers-reduced-motion:reduce){.leaf{transition:none}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+ <header class="bar"><p class="brand"><svg class="logo" viewBox="0 0 322 37" role="img" aria-label="PETHROOM" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path d="M0 35.5V0.600001H23.05C28.5 0.600001 35.85 3.2 35.85 12.6C35.85 21.7 30 25.45 23 25.45H13.4V35.5H0ZM13.05 8.7V17.35H16C19.2 17.35 22.45 16.75 22.45 12.85C22.45 9.15 19.2 8.7 15.95 8.7H13.05Z"/><path d="M39.3449 35.5V0.600001H69.5949V9H52.4449V13.95H68.8449V22.35H52.4449V27.1H69.9449V35.5H39.3449Z"/><path d="M109.023 0.600001V10.9H97.2234V35.5H83.8234V10.9H72.0234V0.600001H109.023Z"/><path d="M134.362 12.65V0.600001H147.762V35.5H134.362V22.95H125.412V35.5H112.012V0.600001H125.412V12.65H134.362Z"/><path d="M152.333 35.5V0.600001H173.983C182.333 0.600001 187.483 3.2 187.483 9.9C187.483 15.25 184.133 17.95 179.133 19.15V19.25C182.033 19.75 183.783 21.15 185.033 23C187.083 26.7 186.933 32.1 188.333 35.5H174.383C173.783 33 173.633 27.55 172.533 25.45C171.733 23.85 170.383 23.65 168.733 23.65H165.733V35.5H152.333ZM165.133 8.4V15.85H168.633C171.383 15.85 174.083 15.55 174.083 12C174.083 8.85 171.533 8.4 168.833 8.4H165.133Z"/><path d="M228.999 18.05C228.999 29.95 221.699 36.1 209.499 36.1C197.299 36.1 190.149 29.95 190.149 18.05C190.149 6.35 197.299 0 209.499 0C221.699 0 228.999 6.35 228.999 18.05ZM204.149 18.05C204.149 21.8 204.699 27.7 209.499 27.7C214.799 27.7 214.949 21.8 214.999 18.05C214.949 14.8 214.599 8.4 209.499 8.4C204.549 8.4 204.149 14.8 204.149 18.05Z"/><path d="M269.771 18.05C269.771 29.95 262.471 36.1 250.271 36.1C238.071 36.1 230.921 29.95 230.921 18.05C230.921 6.35 238.071 0 250.271 0C262.471 0 269.771 6.35 269.771 18.05ZM244.921 18.05C244.921 21.8 245.471 27.7 250.271 27.7C255.571 27.7 255.721 21.8 255.771 18.05C255.721 14.8 255.371 8.4 250.271 8.4C245.321 8.4 244.921 14.8 244.921 18.05Z"/><path d="M273.242 35.5V0.600001H293.042L297.592 19.7H297.692L302.192 0.600001H321.942V35.5H309.942L309.742 8.1H309.642L302.792 35.5H291.642L284.992 8.1H284.792L284.642 35.5H273.242Z"/></g></svg><span>PINK LINE · Brand &amp; Product Introduction 2026</span></p><p class="count" id="count">1 / 16</p></header>
+ <main class="stage" id="stage">
+  <button class="nav prev" id="prev" type="button" aria-label="이전 페이지">‹</button>
+  <div class="book" id="book">
+   <div class="half L" id="L"><img alt=""></div>
+   <div class="half R" id="R"><img alt=""></div>
+  </div>
+  <button class="nav next" id="next" type="button" aria-label="다음 페이지">›</button>
+ </main>
+ <p class="hint">← → 키, 드래그, 스와이프로 책장을 넘겨보세요</p>
+ <nav class="thumbs" id="thumbs" aria-label="펼침면 목록"></nav>
+</div>
+<script>
+(function(){
+ const N=16,src=n=>`p-${n}.jpg`;
+ const spreads=[[null,1]];for(let p=2;p<N;p+=2)spreads.push([p,p+1]);spreads.push([N,null]);
+ const app=document.getElementById('app'),L=document.getElementById('L'),R=document.getElementById('R'),book=document.getElementById('book');
+ const prev=document.getElementById('prev'),next=document.getElementById('next'),count=document.getElementById('count'),thumbs=document.getElementById('thumbs');
+ let single=false,s=0,p=1,busy=false;
+ for(let n=1;n<=N;n++){const im=new Image();im.src=src(n);}
+ function setHalf(el,n,alt){const im=el.querySelector('img');if(n){im.src=src(n);im.alt=`${n}페이지`;el.classList.remove('empty');im.hidden=false;}else{el.classList.add('empty');im.hidden=true;}}
+ function render(){
+  if(single){setHalf(R,p);count.textContent=`${p} / ${N}`;prev.disabled=p===1;next.disabled=p===N;}
+  else{const [a,b]=spreads[s];setHalf(L,a);setHalf(R,b);count.textContent=a&&b?`${a}–${b} / ${N}`:`${a||b} / ${N}`;prev.disabled=s===0;next.disabled=s===spreads.length-1;}
+  buildThumbs();
+ }
+ function buildThumbs(){thumbs.textContent='';
+  const groups=single?Array.from({length:N},(_,i)=>[i+1]):spreads.map(x=>x.filter(Boolean));
+  groups.forEach((g,i)=>{const b=document.createElement('button');b.type='button';b.className='th';b.setAttribute('aria-label',g.join('–')+'페이지');
+   g.forEach(n=>{const im=document.createElement('img');im.src=src(n);im.alt='';b.appendChild(im);});
+   const cur=single?(i+1===p):(i===s);b.setAttribute('aria-current',cur?'true':'false');b.onclick=()=>jump(i);thumbs.appendChild(b);if(cur)requestAnimationFrame(()=>b.scrollIntoView({block:'nearest',inline:'center'}));});}
+ function jump(i){if(busy)return;if(single){p=i+1;}else{if(i===s)return;s=i;}render();}
+ function flip(dir){
+  if(busy)return;
+  if(single){const np=p+dir;if(np<1||np>N)return;p=np;render();return;}
+  const ns=s+dir;if(ns<0||ns>=spreads.length)return;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;if(reduce){s=ns;render();return;}
+  busy=true;const [ca,cb]=spreads[s],[na,nb]=spreads[ns];
+  const leaf=document.createElement('div');leaf.className='leaf '+(dir>0?'fwd':'back');
+  const fa=document.createElement('div');fa.className='face f';const fb=document.createElement('div');fb.className='face b';
+  const ia=new Image(),ib=new Image();ia.alt='';ib.alt='';
+  if(dir>0){ia.src=src(cb);ib.src=src(na);setHalf(R,nb);}else{ia.src=src(ca);ib.src=src(nb);setHalf(L,na);}
+  fa.appendChild(ia);fb.appendChild(ib);leaf.append(fa,fb);book.appendChild(leaf);
+  if(dir>0&&!nb){R.classList.add('empty');}
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{leaf.classList.add('go');leaf.style.transform=`rotateY(${dir>0?-180:180}deg)`;}));
+  leaf.addEventListener('transitionend',e=>{if(e.target!==leaf)return;s=ns;render();leaf.remove();busy=false;},{once:false});
+ }
+ prev.onclick=()=>flip(-1);next.onclick=()=>flip(1);
+ addEventListener('keydown',e=>{if(e.key==='ArrowRight')flip(1);if(e.key==='ArrowLeft')flip(-1);});
+ const st=document.getElementById('stage');let x0=null;
+ st.addEventListener('pointerdown',e=>{if(e.target.closest('.nav'))return;x0=e.clientX;});
+ addEventListener('pointerup',e=>{if(x0===null)return;const d=e.clientX-x0;x0=null;if(Math.abs(d)>40)flip(d<0?1:-1);else if(Math.abs(d)<6&&!e.target.closest('.nav,.thumbs')){const r=book.getBoundingClientRect();if(e.clientX>r.left+r.width/2)flip(1);else flip(-1);}});
+ function mode(){const ns=innerWidth<760||innerHeight>innerWidth*1.05;if(ns!==single){if(ns){const [a,b]=spreads[s];p=a||b;}else{s=Math.floor(p/2);}single=ns;app.classList.toggle('single',single);render();}}
+ addEventListener('resize',mode);
+ const h=parseInt((location.hash||'').replace('#p',''),10);if(h>=1&&h<=N){p=h;s=Math.floor(h/2);}
+ single=!(innerWidth<760||innerHeight>innerWidth*1.05);mode();render();
+})();
+</script>
+
+</body>
+</html>
