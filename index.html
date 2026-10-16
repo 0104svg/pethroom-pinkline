@@ -39,7 +39,7 @@ body{margin:0;overflow:hidden;font-family:var(--font);color:var(--deep);backgrou
 .leaf.fwd{left:50%;transform-origin:left center}
 .leaf.back{left:0;transform-origin:right center}
 .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--paper);overflow:hidden}
-.face img{width:100%;height:100%;object-fit:cover;display:block}
+.face img,.face canvas{width:100%;height:100%;object-fit:cover;display:block}
 .face.b{transform:rotateY(180deg)}
 .face::after{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(120,20,60,.16),transparent 30%);opacity:0}
 .leaf.go .face::after{animation:shade .75s ease-in-out}
@@ -85,12 +85,17 @@ body{margin:0;overflow:hidden;font-family:var(--font);color:var(--deep);backgrou
  const prev=document.getElementById('prev'),next=document.getElementById('next'),count=document.getElementById('count');
  let single=false,s=0,p=1,busy=false;
  const cache={};
- function ready(n){if(!n)return Promise.resolve();if(!cache[n]){const im=new Image();im.src=src(n);cache[n]=im.decode().catch(()=>{});}return cache[n];}
+ const imgs={},bmps={};
+ function ready(n){if(!n)return Promise.resolve();if(!cache[n]){const im=new Image();im.src=src(n);imgs[n]=im;cache[n]=im.decode().catch(()=>{});}return cache[n];}
+ function dims(){const br=book.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);return [Math.round(br.width/2*dpr),Math.round(br.height*dpr)];}
+ function bmp(n,w,h){const k=n+'@'+w+'x'+h;if(!bmps[k])bmps[k]=ready(n).then(()=>window.createImageBitmap?createImageBitmap(imgs[n],{resizeWidth:w,resizeHeight:h,resizeQuality:'high'}):imgs[n]).catch(()=>imgs[n]);return bmps[k];}
+ function face(n,w,h){return bmp(n,w,h).then(b=>{const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(b,0,0,w,h);return c;});}
+ function warm(){if(single)return;const [w,h]=dims();if(!w||!h)return;for(let k=s-1;k<=s+1;k++)(spreads[k]||[]).forEach(n=>{if(n)bmp(n,w,h);});}
  for(let n=1;n<=N;n++)ready(n);
  function setHalf(el,n){const im=el.querySelector('img');if(n){if(im.getAttribute('src')!==src(n))im.src=src(n);im.alt=`${n}페이지`;el.classList.remove('empty');im.hidden=false;}else{el.classList.add('empty');im.hidden=true;}}
  function render(){
   if(single){setHalf(R,p);count.textContent=`${p} / ${N}`;prev.disabled=p===1;next.disabled=p===N;}
-  else{const [a,b]=spreads[s];setHalf(L,a);setHalf(R,b);count.textContent=a&&b?`${a}–${b} / ${N}`:`${a||b} / ${N}`;prev.disabled=s===0;next.disabled=s===spreads.length-1;}
+  else{const [a,b]=spreads[s];setHalf(L,a);setHalf(R,b);count.textContent=a&&b?`${a}–${b} / ${N}`:`${a||b} / ${N}`;prev.disabled=s===0;next.disabled=s===spreads.length-1;warm();}
  }
  async function jump(i){if(busy)return;busy=true;if(single){p=i+1;await ready(p);}else{if(i===s){busy=false;return;}s=i;await Promise.all(spreads[s].map(ready));}render();busy=false;}
  const raf=()=>new Promise(r=>requestAnimationFrame(r));
@@ -103,10 +108,9 @@ body{margin:0;overflow:hidden;font-family:var(--font);color:var(--deep);backgrou
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){s=ns;render();busy=false;return;}
   const leaf=document.createElement('div');leaf.className='leaf '+(dir>0?'fwd':'back');
   const fa=document.createElement('div');fa.className='face f';const fb=document.createElement('div');fb.className='face b';
-  const ia=new Image(),ib=new Image();ia.alt='';ib.alt='';
-  ia.src=src(dir>0?cb:ca);ib.src=src(dir>0?na:nb);
+  const [fw,fh]=dims();
+  const [ia,ib]=await Promise.all([face(dir>0?cb:ca,fw,fh),face(dir>0?na:nb,fw,fh)]);
   fa.appendChild(ia);fb.appendChild(ib);leaf.append(fa,fb);
-  await Promise.all([ia.decode().catch(()=>{}),ib.decode().catch(()=>{})]);
   book.appendChild(leaf);
   // reveal the page underneath only once the leaf covers it
   await raf();
