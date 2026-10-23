@@ -86,10 +86,10 @@ body{margin:0;overflow:hidden;font-family:var(--font);color:var(--deep);backgrou
  let single=false,s=0,p=1,busy=false;
  const cache={};
  const imgs={},bmps={};
- function ready(n){if(!n)return Promise.resolve();if(!cache[n]){const im=new Image();im.src=src(n);imgs[n]=im;cache[n]=im.decode().catch(()=>{});}return cache[n];}
+ function ready(n){if(!n)return Promise.resolve();if(!cache[n]){const im=new Image();im.src=src(n);imgs[n]=im;cache[n]=im.decode().catch(()=>{delete cache[n];});}return cache[n];}
  function dims(){const br=book.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);return [Math.round(br.width/2*dpr),Math.round(br.height*dpr)];}
- function bmp(n,w,h){const k=n+'@'+w+'x'+h;if(!bmps[k])bmps[k]=ready(n).then(()=>window.createImageBitmap?createImageBitmap(imgs[n],{resizeWidth:w,resizeHeight:h,resizeQuality:'high'}):imgs[n]).catch(()=>imgs[n]);return bmps[k];}
- function face(n,w,h){return bmp(n,w,h).then(b=>{const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(b,0,0,w,h);return c;});}
+ function bmp(n,w,h){const k=n+'@'+w+'x'+h;if(!bmps[k])bmps[k]=ready(n).then(()=>window.createImageBitmap?createImageBitmap(imgs[n],{resizeWidth:w,resizeHeight:h,resizeQuality:'high'}):imgs[n]).catch(()=>{delete bmps[k];return imgs[n];});return bmps[k];}
+ function face(n,w,h){const fb=()=>{const im=new Image();im.alt='';im.src=src(n);return im;};return bmp(n,w,h).then(b=>{const c=document.createElement('canvas');c.width=w;c.height=h;try{c.getContext('2d').drawImage(b,0,0,w,h);return c;}catch(e){delete bmps[n+'@'+w+'x'+h];return fb();}}).catch(fb);}
  function warm(){if(single)return;const [w,h]=dims();if(!w||!h)return;for(let k=s-1;k<=s+1;k++)(spreads[k]||[]).forEach(n=>{if(n)bmp(n,w,h);});}
  for(let n=1;n<=N;n++)ready(n);
  function setHalf(el,n){const im=el.querySelector('img');if(n){if(im.getAttribute('src')!==src(n))im.src=src(n);im.alt=`${n}페이지`;el.classList.remove('empty');im.hidden=false;}else{el.classList.add('empty');im.hidden=true;}}
@@ -99,7 +99,8 @@ body{margin:0;overflow:hidden;font-family:var(--font);color:var(--deep);backgrou
  }
  async function jump(i){if(busy)return;busy=true;if(single){p=i+1;await ready(p);}else{if(i===s){busy=false;return;}s=i;await Promise.all(spreads[s].map(ready));}render();busy=false;}
  const raf=()=>new Promise(r=>requestAnimationFrame(r));
- async function flip(dir){
+ async function flip(dir){if(busy)return;try{await flipInner(dir);}catch(e){console.error(e);book.querySelectorAll('.leaf').forEach(l=>l.remove());render();}finally{busy=false;}}
+ async function flipInner(dir){
   if(busy)return;
   if(single){const np=p+dir;if(np<1||np>N)return;busy=true;await ready(np);p=np;render();busy=false;return;}
   const ns=s+dir;if(ns<0||ns>=spreads.length)return;
